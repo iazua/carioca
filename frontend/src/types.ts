@@ -21,7 +21,12 @@ export interface GameState {
   phase: 'draw' | 'play' | 'end';
 }
 
+export interface ReorderData {
+  from: number;
+  to: number;
+}
+
 export interface MovePayload {
-  type: 'move' | 'draw' | 'discard' | 'lay' | 'end_turn';
+  type: 'move' | 'draw' | 'discard' | 'lay' | 'end_turn' | 'reorder';
   data: any;
 }

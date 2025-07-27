@@ -19,6 +19,18 @@ export function GameBoard({ state, onMove }: GameBoardProps) {
     const cardId = result.draggableId;
     const target = result.destination.droppableId as Zone;
 
+    if (
+      result.source.droppableId === 'player_hand' &&
+      result.destination.droppableId === 'player_hand' &&
+      result.destination.index !== result.source.index
+    ) {
+      onMove({
+        type: 'reorder',
+        data: { from: result.source.index, to: result.destination.index },
+      });
+      return;
+    }
+
     if (target === 'discard') {
       onMove({ type: 'discard', data: { card_id: cardId } });
       return;
@@ -51,7 +63,7 @@ export function GameBoard({ state, onMove }: GameBoardProps) {
             key={p.id}
             className={`score ${i === state.current_turn ? 'currentPlayer' : ''}`}
           >
-            {p.name ?? `Player ${i + 1}`}
+            {p.name ?? `Player ${i + 1}`} ({p.hand.length})
           </div>
         ))}
       </div>
@@ -62,6 +74,7 @@ export function GameBoard({ state, onMove }: GameBoardProps) {
           role="button"
           aria-label="stock"
           onClick={() => draw('stock')}
+          onDoubleClick={() => draw('stock')}
         >
           {state.stock_count}
         </div>
@@ -74,6 +87,7 @@ export function GameBoard({ state, onMove }: GameBoardProps) {
               className="pile"
               aria-label="discard"
               onClick={() => draw('discard')}
+              onDoubleClick={() => draw('discard')}
               style={{
                 background: snapshot.isDraggingOver ? '#f0f0f0' : undefined,
               }}
