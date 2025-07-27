@@ -18,4 +18,17 @@ describe('GameBoard', () => {
     const { getByRole } = render(<GameBoard state={state} onMove={onMove} />);
     expect(getByRole('img')).toBeTruthy();
   });
+
+  it('renders scoreboard', () => {
+    const onMove = vi.fn();
+    const { getByText } = render(<GameBoard state={state} onMove={onMove} />);
+    expect(getByText('Player 1')).toBeTruthy();
+  });
+
+  it('emits draw event when clicking stock', () => {
+    const onMove = vi.fn();
+    const { getByLabelText } = render(<GameBoard state={state} onMove={onMove} />);
+    fireEvent.click(getByLabelText('stock'));
+    expect(onMove).toHaveBeenCalledWith({ type: 'draw', data: { from: 'stock' } });
+  });
 });
