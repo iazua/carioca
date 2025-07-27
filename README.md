@@ -37,3 +37,14 @@ Run the example app:
 ```bash
 poetry run streamlit run example_app.py
 ```
+
+## Backend API
+
+A minimal FastAPI server provides WebSocket rooms for multiplayer experiments.
+
+```bash
+poetry run uvicorn backend.app:app --reload
+```
+
+Connect clients to `ws://localhost:8000/ws/{room_id}` and broadcast game
+messages as JSON.
