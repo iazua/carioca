@@ -71,7 +71,11 @@ def render_scores() -> None:
         {"Jugador": f"➡️ {i+1}" if i == game.current_player else i + 1, "Puntaje": s}
         for i, s in enumerate(game.scores)
     ]
-    scores_placeholder.table(scores_data)
+    scores_placeholder.dataframe(
+        scores_data,
+        hide_index=True,
+        use_container_width=True,
+    )
 
 
 render_scores()
