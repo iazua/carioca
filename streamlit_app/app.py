@@ -70,17 +70,36 @@ if st.session_state.get("clear_sel_cards"):
         st.session_state.sel_cards = []
     st.session_state.clear_sel_cards = False
 
-selected = st.multiselect(
-    "Selecciona cartas", options=list(range(len(game.hand))), format_func=lambda i: str(game.hand[i]), key="sel_cards"
-)
+selected = st.session_state.setdefault("sel_cards", [])
 cols = st.columns(len(game.hand))
 for i, card in enumerate(game.hand):
-    with cols[i]:
-        st.image(card_svg(card), use_column_width=True)
+    btn_key = f"card_{i}"
+    border = f"2px solid {ACCENT}" if i in selected else "1px solid transparent"
+    st.markdown(
+        f"""
+        <style>
+        div[data-testid="stButton"][key="{btn_key}"] > button {{
+            background: url('{card_svg(card)}') no-repeat center center;
+            background-size: contain;
+            height: 240px;
+            width: 100%;
+            padding: 0;
+            border: {border};
+        }}
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+    if st.button(" ", key=btn_key):
+        if i in selected:
+            selected.remove(i)
+        else:
+            selected.append(i)
+        st.session_state.sel_cards = selected
+        st.experimental_rerun()
 
 if st.button("Descartar", key="discard_btn") and selected:
     game.discard(selected[0])
-    game.next_player()
     st.session_state.clear_sel_cards = True
 
 if st.button("Formar trío/escala", key="meld_btn") and selected:

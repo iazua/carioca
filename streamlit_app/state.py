@@ -40,8 +40,10 @@ class GameState(BaseModel):
         self.hand.take(card)
 
     def discard(self, index: int) -> Card:
+        """Discard ``hand[index]`` and advance to the next player."""
         card = self.hand.discard(index)
         self.round.discard_pile.append(card)
+        self.next_player()
         return card
 
     def next_player(self) -> None:
