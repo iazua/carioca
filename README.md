@@ -20,3 +20,20 @@ poetry run streamlit run streamlit_app/app.py
 * Docker & GitHub Actions CI.
 
 See `docs/` soon for detailed rules.
+
+## Streamlit Component
+A minimal interactive board is implemented as a Streamlit component.
+
+Build the frontend:
+
+```bash
+cd frontend
+npm install
+npm run build
+```
+
+Run the example app:
+
+```bash
+poetry run streamlit run example_app.py
+```
