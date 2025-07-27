@@ -10,7 +10,7 @@ except ModuleNotFoundError:  # pragma: no cover - allow tests without deps
     Environment = None  # type: ignore
     FileSystemLoader = None  # type: ignore
 
-from carioca.cards import Card, JOKER
+from carioca.cards import Card, JOKER, Suit
 
 if Environment:
     TEMPLATES = Environment(loader=FileSystemLoader(Path(__file__).parent / "templates"))
@@ -31,7 +31,8 @@ def card_svg(card: Optional[Card] = None, *, back: bool = False) -> str:
         else:
             rank = card.rank if card.rank != JOKER else "🃏"
             suit = card.suit.value if card.suit else ""
+            color = "#d00" if card.suit in (Suit.HEARTS, Suit.DIAMONDS) else "#000"
             tpl = TEMPLATES.get_template("card_front.svg")
-            svg = tpl.render(rank=rank, suit=suit)
+            svg = tpl.render(rank=rank, suit=suit, color=color)
     data = base64.b64encode(svg.encode()).decode()
     return f"data:image/svg+xml;base64,{data}"

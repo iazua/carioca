@@ -38,7 +38,7 @@ with st.expander("Nueva partida", expanded=False):
     rounds = st.slider("Rondas", 1, 8, 8, key="rounds_setup")
     start = st.button("Iniciar")
 
-with st.sidebar.expander("Reglas del juego", expanded=False):
+with st.expander("Reglas y opciones", expanded=False):
     st.markdown(
         """
         - Roba cartas del mazo o pozo en tu turno.
@@ -46,12 +46,11 @@ with st.sidebar.expander("Reglas del juego", expanded=False):
         - Cuando estés listo, descarta y cierra la ronda.
         """
     )
-
-st.sidebar.toggle("Auto-refrescar puntaje", key="auto_refresh_scores")
+    st.markdown("[Reglamento completo](https://example.com/reglas.pdf)")
+    st.toggle("Auto-refrescar puntaje", key="auto_refresh_scores")
 
 if "game" not in st.session_state or start:
     st.session_state.game = GameState.new(players, rounds)
-st.markdown("[Reglas](https://example.com/reglas.pdf)")
 
 # -------------------------------------------------------------------
 # Main Header – title and scoreboard
@@ -62,7 +61,7 @@ if "game" not in st.session_state:
 game: GameState = st.session_state.game
 
 st.title(f"Carioca – Ronda {game.round.number}")
-
+st.subheader("Puntajes")
 scores_placeholder = st.empty()
 
 
@@ -71,11 +70,7 @@ def render_scores() -> None:
         {"Jugador": f"➡️ {i+1}" if i == game.current_player else i + 1, "Puntaje": s}
         for i, s in enumerate(game.scores)
     ]
-    scores_placeholder.dataframe(
-        scores_data,
-        hide_index=True,
-        use_container_width=True,
-    )
+    scores_placeholder.table(scores_data)
 
 
 render_scores()
@@ -123,13 +118,14 @@ for i, card in enumerate(game.hand):
 selected.sort()
 st.session_state.sel_cards = selected
 
-if st.button("Descartar", key="discard_btn") and selected:
+act_col1, act_col2 = st.columns(2)
+if act_col1.button("Descartar", key="discard_btn", disabled=not selected):
     game.discard(selected[0])
     game.next_player()
     st.session_state.clear_sel_cards = True
     st.experimental_rerun()
 
-if st.button("Formar trío/escala", key="meld_btn") and selected:
+if act_col2.button("Formar trío/escala", key="meld_btn", disabled=not selected):
     if game.meld(selected):
         st.success("Combinación válida")
     else:
