@@ -22,7 +22,7 @@ describe('GameBoard', () => {
   it('renders scoreboard', () => {
     const onMove = vi.fn();
     const { getByText } = render(<GameBoard state={state} onMove={onMove} />);
-    expect(getByText('Player 1')).toBeTruthy();
+    expect(getByText('Player 1 (1)')).toBeTruthy();
   });
 
   it('emits draw event when clicking stock', () => {
@@ -30,5 +30,12 @@ describe('GameBoard', () => {
     const { getByLabelText } = render(<GameBoard state={state} onMove={onMove} />);
     fireEvent.click(getByLabelText('stock'));
     expect(onMove).toHaveBeenCalledWith({ type: 'draw', data: { from: 'stock' } });
+  });
+
+  it('emits draw event when double clicking discard', () => {
+    const onMove = vi.fn();
+    const { getByLabelText } = render(<GameBoard state={state} onMove={onMove} />);
+    fireEvent.dblClick(getByLabelText('discard'));
+    expect(onMove).toHaveBeenCalledWith({ type: 'draw', data: { from: 'discard' } });
   });
 });
