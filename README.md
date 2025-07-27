@@ -13,24 +13,11 @@ Launch the Streamlit UI:
 poetry run streamlit run streamlit_app/app.py
 ```
 
-### Multiplayer backend (experimental)
-
-An optional FastAPI server provides simple WebSocket rooms used to
-synchronise state between browser clients. Start it locally with:
-
-```bash
-python backend/main.py
-```
-
-The Streamlit app can connect using `st.experimental_connection` and the
-WebSocket URL `ws://localhost:8000/ws/<room>`.
-
 ## Features
 * Full game engine with flexible YAML rules.
 * Rich-styled Typer CLI.
 * ≥90 % test coverage goal (pytest + coverage).
 * Docker & GitHub Actions CI.
-* Experimental AI helpers for automated opponents.
 
 See `docs/` soon for detailed rules.
 
