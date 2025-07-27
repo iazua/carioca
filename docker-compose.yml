@@ -4,3 +4,8 @@ services:
     build: .
     image: carioca:latest
     tty: true
+  backend:
+    build: .
+    command: python backend/main.py
+    ports:
+      - "8000:8000"
