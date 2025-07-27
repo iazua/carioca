@@ -1,7 +1,11 @@
 from __future__ import annotations
 
-from rich.console import Console
-from rich.table import Table
+try:
+    from rich.console import Console
+    from rich.table import Table
+except ModuleNotFoundError:  # pragma: no cover - rich optional in tests
+    Console = None
+    Table = None
 
 from .cards import Card
 
@@ -21,8 +25,14 @@ class Hand(list[Card]):
         finally:
             self.sort()
 
+    def points(self) -> int:
+        """Total value of all cards in hand."""
+        return sum(c.value for c in self)
+
     # Pretty-print ------------------------------------------------------------
     def show(self, *, title: str | None = None) -> None:  # pragma: no cover
+        if Console is None or Table is None:
+            raise RuntimeError("rich package required for show()")
         table = Table(title=title, show_header=False)
         table.add_row(" ".join(map(str, self)))
         Console().print(table)

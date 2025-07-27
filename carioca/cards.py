@@ -59,3 +59,17 @@ class Card:
     @property
     def value(self) -> int:
         return VALUES[self.rank]
+
+    # Alternate constructors -------------------------------------------------
+    @classmethod
+    def from_str(cls, text: str) -> "Card":
+        """Create card from a short string like ``"7♣"`` or ``"🃏"``."""
+        text = text.strip()
+        if text in {"🃏", JOKER, JOKER.capitalize()}:
+            return cls(JOKER)
+        rank, suit_char = text[:-1].upper(), text[-1]
+        try:
+            suit = Suit(suit_char)
+        except ValueError as exc:  # pragma: no cover - invalid suit
+            raise ValueError(f"Invalid suit: {suit_char}") from exc
+        return cls(rank, suit)
