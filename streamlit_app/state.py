@@ -16,7 +16,6 @@ class GameState(BaseModel):
     melds: Dict[int, List[List[Card]]] = {}
     scores: List[int]
     total_rounds: int = 8
-    finished: bool = False
 
     class Config:
         arbitrary_types_allowed = True
@@ -30,7 +29,6 @@ class GameState(BaseModel):
             melds={i: [] for i in range(players)},
             scores=[0] * players,
             total_rounds=total_rounds,
-            finished=False,
         )
 
     # Gameplay helpers --------------------------------------------------
@@ -69,12 +67,8 @@ class GameState(BaseModel):
         # Very naive scoring: remaining card values
         for i, hand in enumerate(self.round.hands):
             self.scores[i] += sum(c.value for c in hand)
-        next_num = self.round.number + 1
-        if next_num <= self.total_rounds:
-            self.round = Round(next_num)
-            self.round.start(len(self.scores), cards_each=5 + next_num)
-        else:
-            self.round = Round(next_num)
-            self.finished = True
+        self.round = Round(self.round.number + 1)
+        if self.round.number <= self.total_rounds:
+            self.round.start(len(self.scores), cards_each=5 + self.round.number)
         self.current_player = 0
         self.melds = {i: [] for i in range(len(self.scores))}
