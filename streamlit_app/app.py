@@ -21,9 +21,14 @@ if repo_root not in sys.path:
     sys.path.insert(0, repo_root)
 
 from state import GameState
-from utils import card_svg
+from utils import card_svg, load_lottie_url
 
 st.set_page_config(page_title="Carioca", page_icon="🃏", layout="wide")
+
+if "winner_anim" not in st.session_state:
+    st.session_state.winner_anim = load_lottie_url(
+        "https://assets9.lottiefiles.com/packages/lf20_qp1q7mct.json"
+    )
 
 THEME = "dark"
 BASE_COLOR = "#361860"
@@ -48,6 +53,15 @@ if "game" not in st.session_state:
 
 game: GameState = st.session_state.game
 
+if game.finished:
+    st.title("Resultado final")
+    scores_data = [
+        {"Jugador": i + 1, "Puntaje": s} for i, s in enumerate(game.scores)
+    ]
+    st.table(scores_data)
+    st_lottie(st.session_state.winner_anim, height=200, key="winner")
+    st.stop()
+
 st.title(f"Carioca – Ronda {game.round.number}")
 
 scores_data = [
@@ -57,7 +71,7 @@ scores_data = [
 st.table(scores_data)
 
 if st.session_state.pop("show_balloons", False):
-    st.balloons()
+    st_lottie(st.session_state.winner_anim, height=200, key="round_end")
 if "round_msg" in st.session_state:
     st.success(st.session_state.pop("round_msg"))
 
@@ -65,8 +79,14 @@ if "round_msg" in st.session_state:
 # Board area – player's hand and piles
 # -------------------------------------------------------------------
 col_deck, col_discard = st.columns(2)
-if col_deck.button("Robar mazo", key="draw_deck", help="D", use_container_width=True):
+if col_deck.button(
+    "Robar mazo",
+    key="draw_deck",
+    help="D",
+    use_container_width=True,
+):
     game.draw(from_discard=False)
+    st.experimental_rerun()
 if col_discard.button(
     f"Robar pozo ({len(game.round.discard_pile)})",
     key="draw_discard",
@@ -74,24 +94,32 @@ if col_discard.button(
     use_container_width=True,
 ):
     game.draw(from_discard=True)
+    st.experimental_rerun()
 
 st.subheader("Tu mano")
 # Clear previous selection before rendering widget
 if st.session_state.get("clear_sel_cards"):
-    if "sel_cards" in st.session_state:
-        st.session_state.sel_cards = []
+    st.session_state.selected = []
     st.session_state.clear_sel_cards = False
 
-selected = st.multiselect(
-    "Selecciona cartas",
-    options=list(range(len(game.hand))),
-    format_func=lambda i: str(game.hand[i]),
-    key="sel_cards",
-)
+if "selected" not in st.session_state:
+    st.session_state.selected = []
+
 cols = st.columns(len(game.hand))
 for i, card in enumerate(game.hand):
     with cols[i]:
+        checked = st.checkbox(
+            label=" ",
+            key=f"sel_{i}",
+            value=i in st.session_state.selected,
+        )
+        if checked and i not in st.session_state.selected:
+            st.session_state.selected.append(i)
+        if not checked and i in st.session_state.selected:
+            st.session_state.selected.remove(i)
         st.image(card_svg(card), use_column_width=True)
+
+selected = st.session_state.selected
 
 if st.button("Descartar", key="discard_btn") and selected:
     game.discard(selected[0])
@@ -121,7 +149,7 @@ if st.button("Cerrar ronda", key="close_btn", help="C"):
     if game.can_close():
         game.close_round()
         st.session_state.round_msg = "Ronda cerrada"
-        if game.round.number > game.total_rounds:
+        if game.finished:
             st.session_state.show_balloons = True
             winner = min(range(len(game.scores)), key=lambda i: game.scores[i])
             st.session_state.round_msg += f" – Ganador: Jugador {winner+1}"
