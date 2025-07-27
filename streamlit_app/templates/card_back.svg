@@ -1,4 +1,11 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="160" height="240" viewBox="0 0 160 240" aria-label="Card back">
-  <rect width="160" height="240" rx="12" fill="#361860"/>
+  <defs>
+    <linearGradient id="backGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#361860"/>
+      <stop offset="100%" stop-color="#5f1bb4"/>
+    </linearGradient>
+  </defs>
+  <rect width="160" height="240" rx="12" fill="url(#backGrad)"/>
+  <rect x="10" y="10" width="140" height="220" rx="10" fill="none" stroke="#F1AC4B" stroke-width="4"/>
   <text x="80" y="120" font-size="40" fill="#F1AC4B" text-anchor="middle" dominant-baseline="middle">Carioca</text>
 </svg>

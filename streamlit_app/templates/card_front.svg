@@ -1,4 +1,12 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="160" height="240" viewBox="0 0 160 240" aria-label="{{ rank }}{{ suit }} card">
-  <rect width="160" height="240" rx="12" fill="#fff" stroke="#000"/>
-  <text x="80" y="120" font-size="60" text-anchor="middle" dominant-baseline="middle">{{ rank }}{{ suit }}</text>
+  <defs>
+    <linearGradient id="frontGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#fff"/>
+      <stop offset="100%" stop-color="#eee"/>
+    </linearGradient>
+  </defs>
+  <rect width="160" height="240" rx="12" fill="url(#frontGrad)" stroke="#000" stroke-width="2"/>
+  <text x="20" y="30" font-size="24">{{ rank }}</text>
+  <text x="140" y="210" font-size="24" transform="rotate(180 140 210)">{{ rank }}</text>
+  <text x="80" y="120" font-size="60" text-anchor="middle" dominant-baseline="middle">{{ suit }}</text>
 </svg>
