@@ -1,0 +1,6 @@
+# Example of overriding default rules (extend as needed)
+card_values:
+  A: 20
+  Joker: 30
+rounds:
+  - { n: 1, requirement: "2_trios", cards_needed: 6 }
