@@ -7,6 +7,19 @@ from streamlit_lottie import st_lottie
 # not as part of a package. Relative imports therefore fail because
 # ``__package__`` is not set. Import the helpers using absolute paths so the
 # application works both locally and when deployed on Streamlit Cloud.
+import os
+import sys
+
+# Ensure the carioca package can be imported when the app is executed
+# directly by Streamlit. When running ``streamlit run streamlit_app/app.py``
+# the working directory is the repo root but the script's directory is
+# ``streamlit_app``. Insert the repository root into ``sys.path`` so that the
+# ``carioca`` package is discoverable without requiring installation.
+current_dir = os.path.dirname(os.path.abspath(__file__))
+repo_root = os.path.abspath(os.path.join(current_dir, os.pardir))
+if repo_root not in sys.path:
+    sys.path.insert(0, repo_root)
+
 from state import GameState
 from utils import card_svg
 
