@@ -30,15 +30,16 @@ BASE_COLOR = "#361860"
 ACCENT = "#F1AC4B"
 
 # -------------------------------------------------------------------
-# Sidebar – new game setup
+# Game setup – previously sidebar
 # -------------------------------------------------------------------
-with st.sidebar:
-    st.header("Nueva partida")
-    players = st.slider("Jugadores", 2, 4, 2, key="players")
-    rounds = st.slider("Rondas", 1, 8, 8, key="rounds")
-    if st.button("Iniciar") or "game" not in st.session_state:
-        st.session_state.game = GameState.new(players, rounds)
-    st.markdown("[Reglas](https://example.com/reglas.pdf)")
+with st.expander("Nueva partida", expanded=False):
+    players = st.slider("Jugadores", 2, 4, 2, key="players_setup")
+    rounds = st.slider("Rondas", 1, 8, 8, key="rounds_setup")
+    start = st.button("Iniciar")
+
+if "game" not in st.session_state or start:
+    st.session_state.game = GameState.new(players, rounds)
+st.markdown("[Reglas](https://example.com/reglas.pdf)")
 
 # -------------------------------------------------------------------
 # Main Header – title and scoreboard
@@ -82,16 +83,18 @@ if st.session_state.get("clear_sel_cards"):
         st.session_state.sel_cards = []
     st.session_state.clear_sel_cards = False
 
-selected = st.multiselect(
-    "Selecciona cartas",
-    options=list(range(len(game.hand))),
-    format_func=lambda i: str(game.hand[i]),
-    key="sel_cards",
-)
+selected = st.session_state.get("sel_cards", [])
 cols = st.columns(len(game.hand))
 for i, card in enumerate(game.hand):
     with cols[i]:
         st.image(card_svg(card), use_column_width=True)
+        chosen = st.toggle("", key=f"card_{i}", value=i in selected)
+        if chosen and i not in selected:
+            selected.append(i)
+        if not chosen and i in selected:
+            selected.remove(i)
+selected.sort()
+st.session_state.sel_cards = selected
 
 if st.button("Descartar", key="discard_btn") and selected:
     game.discard(selected[0])
