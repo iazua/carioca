@@ -49,10 +49,17 @@ if "game" not in st.session_state:
 game: GameState = st.session_state.game
 
 st.title(f"Carioca – Ronda {game.round.number}")
-score_table = "| Jugador | Puntaje |\n|--------|---------|\n"
-for i, s in enumerate(game.scores):
-    score_table += f"| {i+1} | {s} |\n"
-st.markdown(score_table)
+
+scores_data = [
+    {"Jugador": f"➡️ {i+1}" if i == game.current_player else i + 1, "Puntaje": s}
+    for i, s in enumerate(game.scores)
+]
+st.table(scores_data)
+
+if st.session_state.pop("show_balloons", False):
+    st.balloons()
+if "round_msg" in st.session_state:
+    st.success(st.session_state.pop("round_msg"))
 
 # -------------------------------------------------------------------
 # Board area – player's hand and piles
@@ -60,7 +67,12 @@ st.markdown(score_table)
 col_deck, col_discard = st.columns(2)
 if col_deck.button("Robar mazo", key="draw_deck", help="D", use_container_width=True):
     game.draw(from_discard=False)
-if col_discard.button(f"Robar pozo ({len(game.round.discard_pile)})", key="draw_discard", help="P", use_container_width=True):
+if col_discard.button(
+    f"Robar pozo ({len(game.round.discard_pile)})",
+    key="draw_discard",
+    help="P",
+    use_container_width=True,
+):
     game.draw(from_discard=True)
 
 st.subheader("Tu mano")
@@ -71,7 +83,10 @@ if st.session_state.get("clear_sel_cards"):
     st.session_state.clear_sel_cards = False
 
 selected = st.multiselect(
-    "Selecciona cartas", options=list(range(len(game.hand))), format_func=lambda i: str(game.hand[i]), key="sel_cards"
+    "Selecciona cartas",
+    options=list(range(len(game.hand))),
+    format_func=lambda i: str(game.hand[i]),
+    key="sel_cards",
 )
 cols = st.columns(len(game.hand))
 for i, card in enumerate(game.hand):
@@ -82,6 +97,7 @@ if st.button("Descartar", key="discard_btn") and selected:
     game.discard(selected[0])
     game.next_player()
     st.session_state.clear_sel_cards = True
+    st.experimental_rerun()
 
 if st.button("Formar trío/escala", key="meld_btn") and selected:
     if game.meld(selected):
@@ -104,10 +120,11 @@ for player, melds in game.melds.items():
 if st.button("Cerrar ronda", key="close_btn", help="C"):
     if game.can_close():
         game.close_round()
-        st.success("Ronda cerrada")
+        st.session_state.round_msg = "Ronda cerrada"
         if game.round.number > game.total_rounds:
-            st.balloons()
+            st.session_state.show_balloons = True
             winner = min(range(len(game.scores)), key=lambda i: game.scores[i])
-            st.write(f"Ganador: Jugador {winner+1}")
+            st.session_state.round_msg += f" – Ganador: Jugador {winner+1}"
+        st.experimental_rerun()
     else:
         st.error("No puedes cerrar aún")
