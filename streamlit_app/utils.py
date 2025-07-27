@@ -3,8 +3,6 @@ from __future__ import annotations
 import base64
 from pathlib import Path
 from typing import Optional
-import json
-from urllib.request import urlopen
 
 try:
     from jinja2 import Environment, FileSystemLoader
@@ -37,9 +35,3 @@ def card_svg(card: Optional[Card] = None, *, back: bool = False) -> str:
             svg = tpl.render(rank=rank, suit=suit)
     data = base64.b64encode(svg.encode()).decode()
     return f"data:image/svg+xml;base64,{data}"
-
-
-def load_lottie_url(url: str) -> dict:
-    """Fetch a Lottie animation from a URL."""
-    with urlopen(url) as resp:
-        return json.load(resp)
