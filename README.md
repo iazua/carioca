@@ -7,6 +7,12 @@ poetry install
 poetry run carioca play --players 3
 ```
 
+Launch the Streamlit UI:
+
+```bash
+poetry run streamlit run streamlit_app/app.py
+```
+
 ## Features
 * Full game engine with flexible YAML rules.
 * Rich-styled Typer CLI.
