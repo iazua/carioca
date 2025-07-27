@@ -64,6 +64,12 @@ if col_discard.button(f"Robar pozo ({len(game.round.discard_pile)})", key="draw_
     game.draw(from_discard=True)
 
 st.subheader("Tu mano")
+# Clear previous selection before rendering widget
+if st.session_state.get("clear_sel_cards"):
+    if "sel_cards" in st.session_state:
+        st.session_state.sel_cards = []
+    st.session_state.clear_sel_cards = False
+
 selected = st.multiselect(
     "Selecciona cartas", options=list(range(len(game.hand))), format_func=lambda i: str(game.hand[i]), key="sel_cards"
 )
@@ -75,14 +81,14 @@ for i, card in enumerate(game.hand):
 if st.button("Descartar", key="discard_btn") and selected:
     game.discard(selected[0])
     game.next_player()
-    st.session_state.sel_cards = []
+    st.session_state.clear_sel_cards = True
 
 if st.button("Formar trío/escala", key="meld_btn") and selected:
     if game.meld(selected):
         st.success("Combinación válida")
     else:
         st.error("No es trío ni escala")
-    st.session_state.sel_cards = []
+    st.session_state.clear_sel_cards = True
 
 # -------------------------------------------------------------------
 # Meld area
