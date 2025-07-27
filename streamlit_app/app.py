@@ -3,8 +3,12 @@ from __future__ import annotations
 import streamlit as st
 from streamlit_lottie import st_lottie
 
-from .state import GameState
-from .utils import card_svg
+# When this file is executed by Streamlit the module is run as a script and
+# not as part of a package. Relative imports therefore fail because
+# ``__package__`` is not set. Import the helpers using absolute paths so the
+# application works both locally and when deployed on Streamlit Cloud.
+from state import GameState
+from utils import card_svg
 
 st.set_page_config(page_title="Carioca", page_icon="🃏", layout="wide")
 
