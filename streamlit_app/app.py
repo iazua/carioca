@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import streamlit as st
 from streamlit_lottie import st_lottie
+import time
 
 # When this file is executed by Streamlit the module is run as a script and
 # not as part of a package. Relative imports therefore fail because
@@ -37,6 +38,17 @@ with st.expander("Nueva partida", expanded=False):
     rounds = st.slider("Rondas", 1, 8, 8, key="rounds_setup")
     start = st.button("Iniciar")
 
+with st.sidebar.expander("Reglas del juego", expanded=False):
+    st.markdown(
+        """
+        - Roba cartas del mazo o pozo en tu turno.
+        - Forma tríos o escaleras para bajar tus cartas.
+        - Cuando estés listo, descarta y cierra la ronda.
+        """
+    )
+
+st.sidebar.toggle("Auto-refrescar puntaje", key="auto_refresh_scores")
+
 if "game" not in st.session_state or start:
     st.session_state.game = GameState.new(players, rounds)
 st.markdown("[Reglas](https://example.com/reglas.pdf)")
@@ -51,11 +63,22 @@ game: GameState = st.session_state.game
 
 st.title(f"Carioca – Ronda {game.round.number}")
 
-scores_data = [
-    {"Jugador": f"➡️ {i+1}" if i == game.current_player else i + 1, "Puntaje": s}
-    for i, s in enumerate(game.scores)
-]
-st.table(scores_data)
+scores_placeholder = st.empty()
+
+
+def render_scores() -> None:
+    scores_data = [
+        {"Jugador": f"➡️ {i+1}" if i == game.current_player else i + 1, "Puntaje": s}
+        for i, s in enumerate(game.scores)
+    ]
+    scores_placeholder.table(scores_data)
+
+
+render_scores()
+
+if st.session_state.get("auto_refresh_scores"):
+    time.sleep(5)
+    st.experimental_rerun()
 
 if st.session_state.pop("show_balloons", False):
     st.balloons()
