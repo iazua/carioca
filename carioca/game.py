@@ -29,7 +29,17 @@ class Game:
         print(
             f"[bold]Round {self.current_round} started with {self.players} players[/bold]"
         )
-        # TODO: loop over turns, apply full rules.
+        current = 0
+        while all(rnd.hands):
+            hand = rnd.hands[current]
+            hand.take(rnd.draw_pile.draw())
+            rnd.discard_pile.append(hand.discard())
+            if not hand:
+                print(f"Player {current + 1} closed the round!")
+                break
+            current = (current + 1) % self.players
+        for i, hand in enumerate(rnd.hands):
+            self.scores[i] += sum(c.value for c in hand)
         self.current_round += 1
 
     def save(self) -> None:
