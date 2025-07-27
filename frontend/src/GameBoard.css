@@ -1,0 +1,68 @@
+.board {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  font-family: sans-serif;
+}
+
+.scoreboard {
+  display: flex;
+  gap: 1rem;
+}
+
+.score {
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  background: #eee;
+}
+
+.currentPlayer {
+  background: #cdeaff;
+  font-weight: bold;
+}
+
+.zoneRow {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.pile {
+  width: 60px;
+  height: 90px;
+  border: 1px solid #444;
+  border-radius: 4px;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.table {
+  min-height: 100px;
+  min-width: 200px;
+  border: 1px dashed #666;
+  border-radius: 4px;
+  padding: 0.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
+.meld {
+  display: flex;
+  gap: 0.25rem;
+  margin-right: 0.5rem;
+}
+
+.playerHand {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.card {
+  width: 60px;
+  height: 90px;
+}
